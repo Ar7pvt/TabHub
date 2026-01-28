@@ -1,0 +1,62 @@
+/* Invoice Generator Specific Styles */
+@media print {
+    nav, .no-print { display: none !important; }
+    .print-only { display: block !important; }
+    body { background: white; }
+    .shadow-xl { box-shadow: none !important; }
+}
+
+/* Legacy styles for compatibility */
+.invoice-form {
+    max-width: 600px;
+    margin-bottom: 20px;
+}
+
+.invoice-form div {
+    margin-bottom: 10px;
+}
+
+.invoice-form input, .invoice-form textarea {
+    width: 100%;
+}
+
+.item {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.item input {
+    flex: 1;
+}
+
+#invoice {
+    margin-top: 20px;
+    border: 1px solid #ccc;
+    padding: 20px;
+    background-color: #fafafa;
+}
+
+#invoice h2 {
+    margin-top: 0;
+    color: #333;
+}
+
+#invoice h3 {
+    color: #555;
+    margin-bottom: 5px;
+}
+
+#invoice table {
+    background-color: white;
+}
+
+#invoice th {
+    background-color: #e0e0e0;
+    font-weight: bold;
+}
+
+#invoice .total {
+    font-size: 18px;
+    color: #2e7d32;
+}

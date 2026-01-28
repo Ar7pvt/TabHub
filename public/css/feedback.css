@@ -1,0 +1,77 @@
+/* Feedback Collection Specific Styles */
+.star-rating input:checked ~ label {
+    color: #fbbf24;
+}
+.star-rating label:hover,
+.star-rating label:hover ~ label {
+    color: #f59e0b;
+}
+.feedback-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.feedback-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+/* Legacy styles for compatibility */
+.feedback-form {
+    max-width: 600px;
+    margin-bottom: 20px;
+}
+
+.feedback-form div {
+    margin-bottom: 15px;
+}
+
+.feedback-form label {
+    font-weight: bold;
+}
+
+.rating {
+    display: flex;
+    gap: 10px;
+}
+
+.rating input {
+    width: auto;
+}
+
+.rating label {
+    font-weight: normal;
+    margin: 0;
+}
+
+#feedbackList {
+    margin-top: 30px;
+}
+
+.feedback-item {
+    border: 1px solid #ddd;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+}
+
+.feedback-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.rating-display {
+    color: #ff9800;
+    font-size: 18px;
+}
+
+.stats {
+    background-color: #e8f5e8;
+    padding: 15px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+.stats h3 {
+    margin-top: 0;
+}

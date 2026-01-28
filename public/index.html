@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TabHub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/index.css">
+</head>
+<body class="text-slate-800">
+
+    <main class="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
+        <!-- Hero Section -->
+        <div class="text-center mb-16">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-slate-900 mb-4 tracking-tight">
+                Welcome to <span class="text-indigo-600">TabHub</span>
+            </h1>
+            <p class="text-lg text-slate-500 max-w-2xl mx-auto">
+                Your all-in-one web application suite for URL shortening, invoice generation, feedback collection, and task management.
+            </p>
+        </div>
+
+        <!-- Features Section -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
+            <div class="bg-white p-8 rounded-2xl border border-slate-100 text-center hover:shadow-lg transition-shadow">
+                <div class="bg-indigo-100 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                    <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.826a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+                </div>
+                <h3 class="text-xl font-bold text-slate-900 mb-2">URL Shortener</h3>
+                <p class="text-slate-500 mb-4">Create clean, memorable short URLs with click tracking.</p>
+                <a href="shorten.html" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-lg transition-colors">Get Started</a>
+            </div>
+            <div class="bg-white p-8 rounded-2xl border border-slate-100 text-center hover:shadow-lg transition-shadow">
+                <div class="bg-indigo-100 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                    <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                </div>
+                <h3 class="text-xl font-bold text-slate-900 mb-2">Invoice Generator</h3>
+                <p class="text-slate-500 mb-4">Generate professional invoices quickly and easily.</p>
+                <a href="invoice.html" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-lg transition-colors">Create Invoice</a>
+            </div>
+            <div class="bg-white p-8 rounded-2xl border border-slate-100 text-center hover:shadow-lg transition-shadow">
+                <div class="bg-indigo-100 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                    <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+                </div>
+                <h3 class="text-xl font-bold text-slate-900 mb-2">Feedback Collection</h3>
+                <p class="text-slate-500 mb-4">Collect and manage customer feedback efficiently.</p>
+                <a href="feedback.html" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-lg transition-colors">View Feedback</a>
+            </div>
+            <div class="bg-white p-8 rounded-2xl border border-slate-100 text-center hover:shadow-lg transition-shadow">
+                <div class="bg-indigo-100 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                    <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+                </div>
+                <h3 class="text-xl font-bold text-slate-900 mb-2">Task Management</h3>
+                <p class="text-slate-500 mb-4">Organize and track your tasks with ease.</p>
+                <a href="tasks.html" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-lg transition-colors">Manage Tasks</a>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // Fetch and insert common navigation
+        fetch('common.html')
+            .then(response => response.text())
+            .then(html => {
+                document.body.insertAdjacentHTML('afterbegin', html);
+                // Set active link
+                const path = window.location.pathname;
+                const links = document.querySelectorAll('nav a');
+                links.forEach(link => {
+                    if (link.href.includes('index.html') || path.endsWith('/') || path.endsWith('index.html')) {
+                        link.classList.add('text-indigo-600', 'border-b-2', 'border-indigo-600', 'pb-1');
+                        link.classList.remove('text-slate-500');
+                    }
+                });
+            })
+            .catch(error => console.error('Error loading navigation:', error));
+    </script>
+</body>

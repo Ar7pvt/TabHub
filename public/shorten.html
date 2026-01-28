@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinkHub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/shorten.css">
+</head>
+<body class="text-slate-800">
+
+    <main class="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
+        <!-- Hero Section -->
+        <div class="text-center mb-16">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-slate-900 mb-4 tracking-tight">
+                Shorten your links, <span class="text-indigo-600">expand</span> your reach.
+            </h1>
+            <p class="text-lg text-slate-500 max-w-2xl mx-auto">
+                Create clean, memorable, and trackable short URLs in seconds. Perfect for social media, marketing campaigns, and personal use.
+            </p>
+        </div>
+
+        <!-- Shorten Form -->
+        <div class="max-w-3xl mx-auto mb-16">
+            <div class="bg-white p-2 rounded-2xl shadow-2xl shadow-indigo-100 border border-slate-100 flex flex-col md:flex-row gap-2">
+                <div class="flex-grow relative">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.826a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+                    </div>
+                    <input type="url" id="originalUrl" required class="w-full pl-12 pr-4 py-4 rounded-xl border-none focus:ring-0 outline-none text-lg" placeholder="Paste your long URL here...">
+                </div>
+                <button id="shortenBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 px-8 rounded-xl transition-all transform active:scale-95 shadow-lg shadow-indigo-200 flex items-center justify-center gap-2 whitespace-nowrap">
+                    <span>Shorten URL</span>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Stats Section -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+            <div class="bg-white p-8 rounded-2xl border border-slate-100 text-center">
+                <div class="text-3xl font-bold text-indigo-600 mb-1" id="totalLinks">0</div>
+                <div class="text-sm font-medium text-slate-500 uppercase tracking-wider">Links Created</div>
+            </div>
+            <div class="bg-white p-8 rounded-2xl border border-slate-100 text-center">
+                <div class="text-3xl font-bold text-indigo-600 mb-1" id="totalClicks">0</div>
+                <div class="text-sm font-medium text-slate-500 uppercase tracking-wider">Total Clicks</div>
+            </div>
+            <div class="bg-white p-8 rounded-2xl border border-slate-100 text-center">
+                <div class="text-3xl font-bold text-indigo-600 mb-1">99.9%</div>
+                <div class="text-sm font-medium text-slate-500 uppercase tracking-wider">Uptime</div>
+            </div>
+        </div>
+
+        <!-- History List -->
+        <div class="max-w-4xl mx-auto">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-bold text-slate-900">Recent Links</h2>
+                <button id="clearHistory" class="text-sm text-slate-400 hover:text-red-500 transition-colors">Clear history</button>
+            </div>
+
+            <div id="urlList" class="space-y-4">
+                <!-- Loading State -->
+                <div class="text-center py-12 bg-white rounded-2xl border border-dashed border-slate-200">
+                    <p class="text-slate-400">Loading your links...</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // URL Shortener Frontend Logic
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const shortenBtn = document.getElementById('shortenBtn');
+            const originalUrlInput = document.getElementById('originalUrl');
+            const urlList = document.getElementById('urlList');
+            const clearHistoryBtn = document.getElementById('clearHistory');
+
+            // Load existing URLs on page load
+            loadUrls();
+
+            // Shorten URL event listener
+            shortenBtn.addEventListener('click', async () => {
+                const originalUrl = originalUrlInput.value.trim();
+                if (!originalUrl) {
+                    alert('Please enter a URL to shorten');
+                    return;
+                }
+
+                // Basic URL validation
+                try {
+                    new URL(originalUrl);
+                } catch {
+                    alert('Please enter a valid URL');
+                    return;
+                }
+
+                shortenBtn.disabled = true;
+                shortenBtn.innerHTML = '<div class="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full mr-2"></div> Shortening...';
+
+                try {
+                    const response = await fetch('/shorten', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ originalUrl })
+                    });
+
+                    const result = await response.json();
+                    if (response.ok) {
+                        originalUrlInput.value = '';
+                        showShortUrl(result.shortUrl, originalUrl);
+                        loadUrls(); // Refresh the list
+                    } else {
+                        alert('Error: ' + result.error);
+                    }
+                } catch (error) {
+                    alert('Error shortening URL: ' + error.message);
+                } finally {
+                    shortenBtn.disabled = false;
+                    shortenBtn.innerHTML = '<span>Shorten URL</span><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>';
+                }
+            });
+
+            // Clear history event listener
+            clearHistoryBtn.addEventListener('click', async () => {
+                if (confirm('Are you sure you want to clear all URL history?')) {
+                    try {
+                        const response = await fetch('/api/urls', {
+                            method: 'DELETE'
+                        });
+                        if (response.ok) {
+                            loadUrls();
+                        } else {
+                            alert('Error clearing history');
+                        }
+                    } catch (error) {
+                        alert('Error: ' + error.message);
+                    }
+                }
+            });
+
+            // Allow Enter key to shorten
+            originalUrlInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    shortenBtn.click();
+                }
+            });
+        });
+
+        function showShortUrl(shortUrl, originalUrl) {
+            // Create a temporary success message
+            const successDiv = document.createElement('div');
+            successDiv.className = 'bg-green-50 border border-green-200 rounded-2xl p-6 mb-4';
+            successDiv.innerHTML = `
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-lg font-semibold text-green-800 mb-1">URL Shortened Successfully!</h3>
+                        <p class="text-green-600 mb-2">${shortUrl}</p>
+                        <p class="text-sm text-green-500">Original: ${originalUrl}</p>
+                    </div>
+                    <button onclick="copyToClipboard('${shortUrl}')" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                        Copy
+                    </button>
+                </div>
+            `;
+
+            const urlList = document.getElementById('urlList');
+            urlList.insertBefore(successDiv, urlList.firstChild);
+
+            // Remove after 5 seconds
+            setTimeout(() => {
+                if (successDiv.parentNode) {
+                    successDiv.remove();
+                }
+            }, 5000);
+        }
+
+        function loadUrls() {
+            fetch('/api/urls')
+                .then(response => response.json())
+                .then(urls => {
+                    const urlList = document.getElementById('urlList');
+
+                    if (urls.length === 0) {
+                        urlList.innerHTML = `
+                            <div class="text-center py-12 bg-white rounded-2xl border border-dashed border-slate-200">
+                                <p class="text-slate-400">No shortened URLs yet. Create your first one above!</p>
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    urlList.innerHTML = urls.map(url => `
+                        <div class="bg-white p-6 rounded-2xl border border-slate-100 hover:shadow-md transition-shadow">
+                            <div class="flex items-center justify-between">
+                                <div class="flex-grow">
+                                    <a href="${window.location.origin}/${url.shortCode}" target="_blank" class="text-indigo-600 font-medium hover:text-indigo-800 break-all">${window.location.origin}/${url.shortCode}</a>
+                                    <p class="text-sm text-slate-500 mt-1 break-all">→ ${url.originalUrl}</p>
+                                </div>
+                                <button onclick="copyToClipboard('${window.location.origin}/${url.shortCode}')" class="ml-4 bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-1 rounded-lg text-sm transition-colors">
+                                    Copy
+                                </button>
+                            </div>
+                        </div>
+                    `).join('');
+
+                    // Update stats
+                    document.getElementById('totalLinks').textContent = urls.length;
+                })
+                .catch(error => {
+                    console.error('Error loading URLs:', error);
+                    // Fallback to localStorage if API fails
+                    const urls = JSON.parse(localStorage.getItem('shortenedUrls') || '[]');
+                    // ... same as before
+                });
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                // Simple feedback
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = 'Copied!';
+                btn.classList.add('bg-green-600', 'text-white');
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.classList.remove('bg-green-600', 'text-white');
+                }, 1000);
+            });
+        }
+    </script>
+
+    <script>
+        // Fetch and insert common navigation
+        fetch('common.html')
+            .then(response => response.text())
+            .then(html => {
+                document.body.insertAdjacentHTML('afterbegin', html);
+                // Set active link
+                const links = document.querySelectorAll('nav a');
+                links.forEach(link => {
+                    if (link.href.includes('shorten.html')) {
+                        link.classList.add('text-indigo-600', 'border-b-2', 'border-indigo-600', 'pb-1');
+                        link.classList.remove('text-slate-500');
+                    }
+                });
+            })
+            .catch(error => console.error('Error loading navigation:', error));
+    </script>
+</body>
+</html>

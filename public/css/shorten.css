@@ -1,0 +1,10 @@
+/* Shorten Page Specific Styles */
+
+.url-card {
+    transition: all 0.2s ease;
+}
+
+.url-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+}

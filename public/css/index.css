@@ -1,0 +1,16 @@
+/* Legacy styles for compatibility */
+form {
+    margin-bottom: 20px;
+}
+
+input {
+    width: 300px;
+}
+
+#result {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    border-left: 4px solid #4CAF50;
+}

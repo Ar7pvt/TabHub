@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taskly</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/tasks.css">
+</head>
+<body class="text-slate-800">
+
+    <main class="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+        
+        <!-- Stats Dashboard -->
+        <div id="statsSection" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            <!-- Stats populated by JS -->
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
+                <div class="text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Total Tasks</div>
+                <div class="text-2xl font-black text-slate-900" id="statTotal">0</div>
+            </div>
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
+                <div class="text-indigo-400 text-xs font-bold uppercase tracking-wider mb-1">Pending</div>
+                <div class="text-2xl font-black text-indigo-600" id="statPending">0</div>
+            </div>
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
+                <div class="text-emerald-400 text-xs font-bold uppercase tracking-wider mb-1">Completed</div>
+                <div class="text-2xl font-black text-emerald-600" id="statCompleted">0</div>
+            </div>
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
+                <div class="text-rose-400 text-xs font-bold uppercase tracking-wider mb-1">High Priority</div>
+                <div class="text-2xl font-black text-rose-600" id="statHigh">0</div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <!-- Sidebar / Form -->
+            <div class="lg:col-span-4">
+                <div class="bg-white p-6 rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 sticky top-24">
+                    <h2 class="text-xl font-bold mb-6 flex items-center gap-2 text-indigo-600">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                        New Task
+                    </h2>
+                    <form id="taskForm" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Title</label>
+                            <input type="text" id="title" required class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-100 focus:border-indigo-500 outline-none transition-all" placeholder="What needs to be done?">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Priority</label>
+                            <select id="priority" class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-100 focus:border-indigo-500 outline-none transition-all appearance-none bg-no-repeat bg-[right_1rem_center]" style="background-image: url('data:image/svg+xml;charset=utf-8,%3Csvg xmlns=%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22 fill=%22none%22 viewBox=%220%200%2020%2020%22%3E%3Cpath stroke=%22%236b7280%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22 stroke-width=%221.5%22 d=%22m6%208%204%204%204-4%22%2F%3E%3C%2Fsvg%3E')">
+                                <option value="low">Low Priority</option>
+                                <option value="medium">Medium Priority</option>
+                                <option value="high">High Priority</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Description</label>
+                            <textarea id="description" rows="3" class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-100 focus:border-indigo-500 outline-none transition-all resize-none" placeholder="Task details..."></textarea>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Due Date</label>
+                                <input type="date" id="dueDate" class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-100 focus:border-indigo-500 outline-none text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Assigned To</label>
+                                <input type="text" id="assignedTo" class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-100 focus:border-indigo-500 outline-none text-sm" placeholder="Name">
+                            </div>
+                        </div>
+                        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-indigo-100 transform active:scale-[0.98]">
+                            Add Task
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Task List Area -->
+            <div class="lg:col-span-8">
+                <!-- Filters Bar -->
+                <div class="bg-white p-4 rounded-2xl border border-slate-100 mb-6 flex flex-wrap gap-4 items-center justify-between">
+                    <div class="flex gap-2">
+                        <button onclick="setFilter('status', 'all')" class="status-filter px-4 py-1.5 rounded-full text-xs font-bold transition-all bg-indigo-600 text-white" data-val="all">All</button>
+                        <button onclick="setFilter('status', 'todo')" class="status-filter px-4 py-1.5 rounded-full text-xs font-bold transition-all bg-slate-50 text-slate-500 hover:bg-slate-100" data-val="todo">To Do</button>
+                        <button onclick="setFilter('status', 'done')" class="status-filter px-4 py-1.5 rounded-full text-xs font-bold transition-all bg-slate-50 text-slate-500 hover:bg-slate-100" data-val="done">Completed</button>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-bold text-slate-400 uppercase">Priority:</span>
+                        <select onchange="setFilter('priority', this.value)" class="text-xs font-bold bg-slate-50 border-none rounded-lg px-3 py-1.5 focus:ring-0 outline-none text-slate-600">
+                            <option value="all">All Priorities</option>
+                            <option value="high">High</option>
+                            <option value="medium">Medium</option>
+                            <option value="low">Low</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Task Cards -->
+                <div id="taskList" class="space-y-4">
+                    <!-- Loading Placeholder -->
+                    <div class="flex flex-col items-center py-20 bg-white rounded-3xl border border-dashed border-slate-200">
+                        <div class="animate-spin w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full mb-4"></div>
+                        <p class="text-slate-400">Fetching your task board...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal System -->
+    <div id="modalContainer" class="fixed inset-0 z-[100] hidden items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
+        <div class="bg-white rounded-3xl p-8 max-w-lg w-full shadow-2xl overflow-hidden relative">
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            <h3 class="text-2xl font-bold mb-6 text-slate-900" id="modalTitle">Edit Task</h3>
+            <div id="modalContent">
+                <!-- Form inside populated by JS -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let allTasks = [];
+        let activeFilters = { status: 'all', priority: 'all' };
+
+        document.getElementById('taskForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await addTask();
+        });
+
+        async function addTask() {
+            const title = document.getElementById('title').value;
+            const description = document.getElementById('description').value;
+            const priority = document.getElementById('priority').value;
+            const dueDate = document.getElementById('dueDate').value;
+            const assignedTo = document.getElementById('assignedTo').value;
+
+            const taskData = {
+                title,
+                description,
+                priority,
+                dueDate: dueDate || null,
+                assignedTo,
+                completed: false,
+                status: 'todo'
+            };
+
+            try {
+                const response = await fetch('/api/tasks', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(taskData)
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    document.getElementById('taskForm').reset();
+                    loadTasks();
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (error) {
+                alert('Error adding task: ' + error.message);
+            }
+        }
+
+        async function loadTasks() {
+            try {
+                const response = await fetch('/api/tasks');
+                allTasks = await response.json();
+                updateStats();
+                applyFilters();
+            } catch (error) {
+                console.error('Error loading tasks:', error);
+            }
+        }
+
+        function updateStats() {
+            document.getElementById('statTotal').innerText = allTasks.length;
+            document.getElementById('statCompleted').innerText = allTasks.filter(t => t.completed).length;
+            document.getElementById('statPending').innerText = allTasks.filter(t => !t.completed).length;
+            document.getElementById('statHigh').innerText = allTasks.filter(t => t.priority === 'high' && !t.completed).length;
+        }
+
+        window.setFilter = (type, val) => {
+            activeFilters[type] = val;
+            if (type === 'status') {
+                document.querySelectorAll('.status-filter').forEach(btn => {
+                    if (btn.dataset.val === val) {
+                        btn.className = "status-filter px-4 py-1.5 rounded-full text-xs font-bold transition-all bg-indigo-600 text-white";
+                    } else {
+                        btn.className = "status-filter px-4 py-1.5 rounded-full text-xs font-bold transition-all bg-slate-50 text-slate-500 hover:bg-slate-100";
+                    }
+                });
+            }
+            applyFilters();
+        };
+
+        function applyFilters() {
+            let filtered = allTasks;
+            if (activeFilters.status !== 'all') {
+                const isDone = activeFilters.status === 'done';
+                filtered = filtered.filter(t => t.completed === isDone);
+            }
+            if (activeFilters.priority !== 'all') {
+                filtered = filtered.filter(t => t.priority === activeFilters.priority);
+            }
+            renderTasks(filtered);
+        }
+
+        function renderTasks(list) {
+            const container = document.getElementById('taskList');
+            if (list.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-20 bg-white rounded-3xl border border-dashed border-slate-200">
+                        <p class="text-slate-400">No tasks found. Time to relax or clear your filters!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = list.map(t => {
+                const priorityClass = {
+                    'high': 'bg-rose-100 text-rose-600',
+                    'medium': 'bg-amber-100 text-amber-600',
+                    'low': 'bg-indigo-100 text-indigo-600'
+                }[t.priority] || 'bg-slate-100 text-slate-600';
+
+                const dueStr = t.dueDate ? new Date(t.dueDate).toLocaleDateString(undefined, {month: 'short', day: 'numeric'}) : 'No date';
+                
+                return `
+                    <div class="task-card bg-white p-5 rounded-2xl border border-slate-100 flex items-start gap-4 ${t.completed ? 'opacity-60 grayscale-[0.5]' : ''}">
+                        <button onclick="toggleStatus('${t._id}', ${t.completed})" class="mt-1 flex-shrink-0 w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all ${t.completed ? 'bg-indigo-600 border-indigo-600 text-white' : 'border-slate-200 hover:border-indigo-400'}">
+                            ${t.completed ? '<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"></path></svg>' : ''}
+                        </button>
+                        <div class="flex-grow">
+                            <div class="flex items-start justify-between mb-1">
+                                <h4 class="font-bold text-slate-900 ${t.completed ? 'line-through' : ''}">${t.title}</h4>
+                                <span class="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest ${priorityClass}">
+                                    ${t.priority}
+                                </span>
+                            </div>
+                            <p class="text-sm text-slate-500 mb-3 line-clamp-2">${t.description || 'No description provided.'}</p>
+                            <div class="flex flex-wrap items-center gap-4 text-xs font-semibold text-slate-400">
+                                <span class="flex items-center gap-1">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                    ${dueStr}
+                                </span>
+                                <span class="flex items-center gap-1">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                                    ${t.assignedTo || 'Unassigned'}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="flex-shrink-0 flex flex-col gap-2">
+                            <button onclick="openEditModal('${t._id}')" class="p-2 text-slate-400 hover:text-indigo-600 transition-colors">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                            </button>
+                            <button onclick="confirmDelete('${t._id}')" class="p-2 text-slate-400 hover:text-rose-600 transition-colors">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        window.toggleStatus = async (id, currentStatus) => {
+            const newStatus = currentStatus ? 'todo' : 'done';
+            const newCompleted = !currentStatus;
+
+            try {
+                const response = await fetch(`/api/tasks/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: newStatus, completed: newCompleted })
+                });
+
+                if (response.ok) {
+                    loadTasks();
+                } else {
+                    alert('Error updating task status');
+                }
+            } catch (error) {
+                alert('Error updating task: ' + error.message);
+            }
+        };
+
+        window.confirmDelete = async (id) => {
+            if (confirm("Delete this task?")) {
+                try {
+                    const response = await fetch(`/api/tasks/${id}`, {
+                        method: 'DELETE'
+                    });
+
+                    if (response.ok) {
+                        loadTasks();
+                    } else {
+                        alert('Error deleting task');
+                    }
+                } catch (error) {
+                    alert('Error deleting task: ' + error.message);
+                }
+            }
+        };
+
+        const modal = document.getElementById('modalContainer');
+        const modalContent = document.getElementById('modalContent');
+        
+        window.closeModal = () => {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        };
+
+        window.openEditModal = async (id) => {
+            const task = allTasks.find(t => t._id === id);
+            if (!task) return;
+
+            modalContent.innerHTML = `
+                <form id="editForm" class="space-y-4">
+                    <input type="hidden" id="editId" value="${id}">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Title</label>
+                        <input type="text" id="editTitle" value="${task.title}" required class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-100 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Priority</label>
+                        <select id="editPriority" class="w-full px-4 py-2 rounded-xl border border-slate-200 outline-none">
+                            <option value="low" ${task.priority === 'low' ? 'selected' : ''}>Low</option>
+                            <option value="medium" ${task.priority === 'medium' ? 'selected' : ''}>Medium</option>
+                            <option value="high" ${task.priority === 'high' ? 'selected' : ''}>High</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Description</label>
+                        <textarea id="editDescription" rows="3" class="w-full px-4 py-2 rounded-xl border border-slate-200 outline-none resize-none">${task.description || ''}</textarea>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Due Date</label>
+                            <input type="date" id="editDueDate" value="${task.dueDate ? task.dueDate.split('T')[0] : ''}" class="w-full px-4 py-2 rounded-xl border border-slate-200 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Assigned To</label>
+                            <input type="text" id="editAssignedTo" value="${task.assignedTo || ''}" class="w-full px-4 py-2 rounded-xl border border-slate-200 outline-none">
+                        </div>
+                    </div>
+                    <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl shadow-lg shadow-indigo-100 transition-all">
+                        Update Task
+                    </button>
+                </form>
+            `;
+
+            document.getElementById('editForm').addEventListener('submit', async e => {
+                e.preventDefault();
+                const updatedId = document.getElementById('editId').value;
+                const updatedData = {
+                    title: document.getElementById('editTitle').value,
+                    priority: document.getElementById('editPriority').value,
+                    description: document.getElementById('editDescription').value,
+                    dueDate: document.getElementById('editDueDate').value || null,
+                    assignedTo: document.getElementById('editAssignedTo').value
+                };
+                try {
+                    const response = await fetch(`/api/tasks/${updatedId}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(updatedData)
+                    });
+
+                    if (response.ok) {
+                        closeModal();
+                        loadTasks();
+                    } else {
+                        alert('Error updating task');
+                    }
+                } catch (error) {
+                    alert('Error updating task: ' + error.message);
+                }
+            });
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        };
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+
+        // Load tasks on page load
+        loadTasks();
+    </script>
+
+    <script>
+        // Fetch and insert common navigation
+        fetch('common.html')
+            .then(response => response.text())
+            .then(html => {
+                document.body.insertAdjacentHTML('afterbegin', html);
+                // Set active link
+                const links = document.querySelectorAll('nav a');
+                links.forEach(link => {
+                    if (link.href.includes('tasks.html')) {
+                        link.classList.add('text-indigo-600', 'border-b-2', 'border-indigo-600', 'pb-1');
+                        link.classList.remove('text-slate-500');
+                    }
+                });
+            })
+            .catch(error => console.error('Error loading navigation:', error));
+    </script>
+</body>
+</html>
