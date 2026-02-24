@@ -1,3 +1,21 @@
+# Web App - Comprehensive Business Tools Suite
+
+A full-stack web application that provides a suite of productivity and business tools. This modern application includes four main features to help manage URLs, generate invoices, collect feedback, and manage tasks efficiently.
+
+## 🚀 Features
+
+### 🔗 URL Shortener
+Create compact, shareable short URLs from long web addresses. Perfect for social media, emails, and messaging platforms with quick redirect functionality.
+
+### 📄 Invoice Generator
+Design, create, and manage professional invoices. Track invoice details, amounts, and keep a complete record of your billing history with easy retrieval and updates.
+
+### 💬 Feedback Collection
+Gather valuable feedback from users and customers. Analyze feedback with built-in statistics and reporting to improve your products and services.
+
+### ✅ Task Management
+Organize and track your work with a comprehensive task management system. Create, prioritize, and manage tasks by status and priority levels.
+
 ## 🛠 Technology Stack
 
 - **Backend**: Node.js, Express.js
